@@ -1,13 +1,10 @@
 const hue = require("node-hue-api")
-// const hueApi = hue.HueApi
 
 function displayBridges(bridge) {
-	console.log("Hue Bridges Found: " + JSON.stringify(bridge));
+	console.log("Hue Bridges Found: " + JSON.stringify(bridge))
 }
 
-// --------------------------
-// Using a promise
-hue.nupnpSearch().then(displayBridges).done();
+hue.nupnpSearch().then(displayBridges).done()
 
 // --------------------------
 // Using a callback
@@ -17,21 +14,17 @@ hue.nupnpSearch().then(displayBridges).done();
 // });
 
 // Credentials
-// {"devicetype":"austwohome"}
-//"username": "cq5Yb7Me6tLAS-hxKUDsm9oRtUKpGG24edGUsO01"
-// TODO use UPnP
 const host = '10.4.0.54'
 const username = 'cq5Yb7Me6tLAS-hxKUDsm9oRtUKpGG24edGUsO01'
-const api = new hue.HueApi(host, username);
+const api = new hue.HueApi(host, username)
 
-//Verify
+// Verify
 function displayResult(result) {
-    //TODO parse out each ligh\
-    console.log('\nRESULT:', JSON.stringify(result.lights, null, 2))
+    console.log('\nHue RESULT:', JSON.stringify(result.lights, null, 2))
 }
 
 function displayLightState(result) {
-    console.log('\nLIGHT STATE:', JSON.stringify(result, null, 2))
+    console.log('\nHue LIGHT STATE:', JSON.stringify(result, null, 2))
 }
 
 api.config()
@@ -44,12 +37,10 @@ api.lights()
 
 const lightState = hue.lightState
 
+function makePartyLights() {
+	// Create a new lightStat objerct to pass to a Philips Hue Light
+	let partyState = lightState.create().on().transitionFast().colorLoop()
+	return api.setLightState(1, partyState)
+}
 
-// Create a new lightStat objerct to pass to a Philips Hue Light
-let partyState = lightState.create().on().transitionFast().colorLoop()
-
-api.setLightState(1, partyState)
-    .then(displayLightState)
-    .done()
-
-// modul.exports hu
+module.exports = makePartyLights

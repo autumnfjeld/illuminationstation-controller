@@ -4,12 +4,22 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "test"
+    "test": "test",
+    "start": "node app.js",
+    "curl-root": "curl http://59.100.235.250:9800 -XPUT -d\"from=autumn&message=MakeItWork\"  | json_pp",
+    "curl-data": "curl http://59.100.235.250:9800 -XPUT -d @test/dialogflow-req.json",
+    "curl-post": "curl -v POST http://59.100.235.250:9800 -d @test/dialogflow-req-body.json --header \"Content-Type: application/json\"",
+    "curl-partylights": "curl http://59.100.235.250:9800/partylights | json_pp",
+    "greenlock": "greenlock",
+    "letsencrypt": "letsencrypt"
   },
   "author": "Autumn",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.18.2",
     "express": "^4.16.2",
-    "node-hue-api": "^2.4.2"
-  }
+    "node-hue-api": "^2.4.2",
+    "util": "^0.10.3"
+  },
+  "false": {}
 }
