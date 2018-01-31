@@ -1,0 +1,29 @@
+{
+    "responseId": "fed5dc19-3776-4a95-948d-adfc003d1e5a",
+    "queryResult": {
+        "queryText": "party lights",
+        "parameters": {},
+        "allRequiredParamsPresent": true,
+        "fulfillmentText": "Yippee! CURL TEST! Party lights ON!",
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": [
+                        "Yippee! CURL TEST Party lights ON!"
+                    ]
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/illuminationstation-e025c/agent/intents/5776c6ee-6376-455c-846e-61a1dacf170a",
+            "displayName": "PartyLights"
+        },
+        "intentDetectionConfidence": 1,
+        "diagnosticInfo": {},
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "payload": {}
+    },
+    "session": "projects/illuminationstation-e025c/agent/sessions/6e47beec-a608-4927-bc22-334d370cd22c"
+}
