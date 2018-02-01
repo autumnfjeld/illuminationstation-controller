@@ -1,0 +1,34 @@
+{
+    "responseId": "d717388e-b086-4329-a2c0-25fd11612eb4",
+    "queryResult": {
+        "queryText": "soooothe me",
+        "parameters": {},
+        "allRequiredParamsPresent": true,
+        "fulfillmentText": "Soothing TEST!",
+        "fulfillmentMessages": [
+            {
+                "text": {
+                    "text": [
+                        "Sooooothign test!"
+                    ]
+                }
+            },
+            {
+                "payload": {
+                    "lightresponse": "soothing"
+                }
+            }
+        ],
+        "intent": {
+            "name": "projects/illuminationstation-e025c/agent/intents/5776c6ee-6376-455c-846e-61a1dacf170a",
+            "displayName": "Sooooth"
+        },
+        "intentDetectionConfidence": 1,
+        "diagnosticInfo": {},
+        "languageCode": "en"
+    },
+    "originalDetectIntentRequest": {
+        "payload": {}
+    },
+    "session": "projects/illuminationstation-e025c/agent/sessions/6e47beec-a608-4927-bc22-334d370cd22c"
+}

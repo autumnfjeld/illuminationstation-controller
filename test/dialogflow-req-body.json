@@ -1,29 +1,32 @@
 {
-    "responseId": "fed5dc19-3776-4a95-948d-adfc003d1e5a",
-    "queryResult": {
-        "queryText": "party lights",
-        "parameters": {},
-        "allRequiredParamsPresent": true,
-        "fulfillmentText": "Yippee! CURL TEST! Party lights ON!",
-        "fulfillmentMessages": [
-            {
-                "text": {
-                    "text": [
-                        "Yippee! CURL TEST Party lights ON!"
-                    ]
-                }
-            }
-        ],
-        "intent": {
-            "name": "projects/illuminationstation-e025c/agent/intents/5776c6ee-6376-455c-846e-61a1dacf170a",
-            "displayName": "PartyLights"
-        },
-        "intentDetectionConfidence": 1,
-        "diagnosticInfo": {},
-        "languageCode": "en"
+  "responseId": "403e69f5-97c0-49e2-bbff-93f7576e23f0",
+  "queryResult": {
+    "queryText": "party lights",
+    "parameters": {},
+    "allRequiredParamsPresent": true,
+    "fulfillmentText": "Oops. The Illumination Station is not responding. Maybe you can give it another shot.",
+    "fulfillmentMessages": [
+      {
+        "text": {
+          "text": [
+            "Oops.  The Illumination Station is not responding.  Maybe you can give it another shot."
+          ]
+        }
+      },
+      {
+        "payload": {
+          "lightresponse": "partylights"
+        }
+      }
+    ],
+    "intent": {
+      "name": "projects/illuminationstation-e025c/agent/intents/5776c6ee-6376-455c-846e-61a1dacf170a",
+      "displayName": "PartyLights"
     },
-    "originalDetectIntentRequest": {
-        "payload": {}
+    "intentDetectionConfidence": 1,
+    "diagnosticInfo": {
+      "webhook_latency_ms": 853
     },
-    "session": "projects/illuminationstation-e025c/agent/sessions/6e47beec-a608-4927-bc22-334d370cd22c"
+    "languageCode": "en"
+  }
 }
