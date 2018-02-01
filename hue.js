@@ -9,7 +9,7 @@ function displayResult(description, result) {
 }
 function logSetState(stateLabel, stateValues) {
 	console.log('\no0o0oo00o00o0o0O0o00oO0o0o0O0o00oo00Oo\n' +
-		'Setting ', stateLabel, 'light state with values:\n' , stateValues ,
+		'Setting ', '*'+stateLabel+'*', 'light state with values:\n' , stateValues ,
 	  	'\no0o0oo00o0O0o0o0O0o00oO0o000o00oo0o0Oo');
 }
 // function displayLightState(result) {
@@ -29,21 +29,9 @@ api.config()
     .then((result) => displayResult('CONFIG', result))
     .done();
 
-api.setLightState
-let initState = hue.lightState.create().on();
-
 api.lights()
     .then( (result) => {
-		console.log('Reseting light bulb ')
 		displayResult('EXISTING STATE', result)
-		initState.reset();
-		// api.setLightState(1, {});
-		// api.setLightState(1, initState.reset())
-		// 	.then( (result) => {
-		// 		logSetState('RESET. NEW STATE', result)
-		// 	});
-		// api.setLightState(1, state.reset())
-		// api.setLightState(1, state);
 	})
     .done()
 
@@ -54,21 +42,22 @@ const resetState = {
 		"sat": 254,
 		"effect": "none",
 		"xy": [
-			0.4288,
-			0.5034
+			0.35,
+			0.3
 		],
 		"ct": 319,
 		"alert": "none"
 };
 
-initState.reset();
+// initState.reset();
 // api.setLightState(1, initState.reset())
 api.setLightState(1, resetState)
 	.then( (result) => {
 		console.log("WTHD", result);
 		logSetState('initState.reset', initState._values)
-		api.lights().then( (result) => displayResult('RESET', result));
+		api.lights().then( (result) => displayResult('INIT AND RESET', result));
 	});
+let initState = hue.lightState.create().on();
 
 // const lightState = hue.lightState
 // Clear all light states
@@ -86,8 +75,16 @@ const lightStates = {
 
 	purple: hue.lightState.create().on().transitionFast().xy(0.24, 0.08),
 
+	getState: function(){
+		api.lights()
+		    .then( (result) => {
+				displayResult('CURRENT STATE', result)
+			})
+		    .done()
+	},
+
 	setState: function (state){
-		// this.resetState()
+		this.resetState()
 		this.currentState = this[state]
 		logSetState(state, this[state]._values);
 		return api.setLightState(1, this[state]);
@@ -108,15 +105,14 @@ const lightStates = {
 		// 	});
 	},
 
-	// resetState: function(){
-	// 	api.setLightState(1, resetState)
-	// 		.then( () => {displayResult()});
-	// },
-
-
+	resetState: function(){
+		api.setLightState(1, resetState)
+			.then( () => {displayResult()});
+	},
 
 	off: function () {
-		return api.setLightState(1, this.currentState.off()).then(logSetState('off', this.state));
+		return api.setLightState(1, this.currentState.off())
+				  .then(logSetState('off', this.state));
 
 	},
 

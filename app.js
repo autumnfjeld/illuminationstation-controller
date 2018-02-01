@@ -38,22 +38,25 @@ const logLightResponse = (result) => {
 
 app.use(logStuff)
 
-app.get('/', (req, res) => res.send({message:'Hi! You\'ve reached the Illumination Station'}));
+app.get('/', (req, res) => {
+    res.send({message:'Hi! You\'ve reached the Illumination Station'})
+});
 
-app.get('/healthcheck', jsonParser, (req, res) => {
-
+app.get('/lightcheck', jsonParser, (req, res) => {
     lightStates.setState('party');
     setTimeout( () => lightStates.setState('oops'),  5000);
     setTimeout(() => lightStates.setState('soothing'), 8000);
-    setTimeout(() => lightStates.setState('purple'), 10000);
+    setTimeout(() => lightStates.setState('purple'), 12000);
     setTimeout(() => {
-        res.send({message: 'Healthcheck done! You shoulda seen a hellavalotta lights'})
-    }, 11000);
-})
+        lightStates.getState();
+        res.send({message: 'Healthcheck done! You shoulda seen a hellavalotta lights'});
+    }, 13000);
+});
 
-// app.get('/getstate', jsonParser, (req, res) => {
-//
-// })
+app.get('/getstate', jsonParser, (req, res) => {
+    lightStates.getState();
+    res.send({message: 'Got state'});
+});
 
 app.post('/', jsonParser, (req, res) => {
     if (!req.body || !Object.keys(req.body)) {
@@ -66,14 +69,6 @@ app.post('/', jsonParser, (req, res) => {
         source: 'IlluminationStation studio app',
         fulfillmentText: "sdsd"
     };
-    // let responseToProxy = {
-    //     statusCode: 200,
-    //     body: {
-    //         message:'Got a POST: You\'ve reached the Illumination Station!',
-    //         source: 'IlluminationStation studio app',
-    //         fulfillmentText: 'Horray! changing the lights for you!',
-    //     }
-    // }
 
     let msgs = req.body.queryResult.fulfillmentMessages
     let customPayload = msgs.find( (msg) => msg.hasOwnProperty('payload') )
@@ -100,7 +95,6 @@ app.post('/', jsonParser, (req, res) => {
             lightStates.setState('oops')
                 .then(logLightResponse)
                 .done(res.json(resBody))
-
     }
 })
 
