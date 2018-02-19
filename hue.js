@@ -67,6 +67,8 @@ const lightStates = {
 
 	currentState: initState,
 
+	currentMood: 'none',
+
 	party: hue.lightState.create().on().transitionFast().xy(.25,.11).colorLoop().alert('lselect'),
 
 	soothing: hue.lightState.create().on().transitionInstant().effect('none').xy(0.57, 0.34),
@@ -76,18 +78,31 @@ const lightStates = {
 	purple: hue.lightState.create().on().transitionFast().xy(0.24, 0.08),
 
 	getState: function(){
-		api.lights()
-		    .then( (result) => {
-				displayResult('CURRENT STATE', result)
+		let current = {
+			mood: this.currentMood,
+			lightState: this.currentState
+		};
+		return new Promise((resolve, reject) => {
+			api.lights()
+			.then( (result) => {
+				current.lightState = result;
+				displayResult('CURRENT STATE', current);
+				resolve(current);
 			})
-		    .done()
+			.catch( (err) => {
+				reject(err)
+			})
+			.done()
+
+		})
 	},
 
-	setState: function (state){
+	setState: function (mood){
 		this.resetState()
-		this.currentState = this[state]
-		logSetState(state, this[state]._values);
-		return api.setLightState(1, this[state]);
+		this.currentState = this[mood];
+		this.currentMood = mood;
+		logSetState(mood, this[mood]._values);
+		return api.setLightState(1, this[mood]);
 
 		// Clear old state
 		// api.setLightState(1, this.currentState.off())
