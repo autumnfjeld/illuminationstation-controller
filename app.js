@@ -8,7 +8,7 @@ const lightStates = require('./hue.js');
 
 const jsonParser = bodyParser.json({
     extended: true
-})
+});
 
 /**
 * Logging
@@ -24,7 +24,7 @@ const logStuff = function(req, res, next) {
     // console.log('\n __Request Params__ \n ', req.params);
     // console.log('\n __Request Query__ \n ', req.query);
     next();
-}
+};
 
 const setCORSHeaders = (req, res, next) => {
     res.header('Access-Control-Allow-Origin', 'http://localhost:3000');
@@ -32,7 +32,7 @@ const setCORSHeaders = (req, res, next) => {
     // Set Content-Type HTTP header
     res.type('application/json');
     next();
-}
+};
 
 const logDialogFlowPostBody = function(body) {
     console.log('\no0o0oo00o0O0o0o0O0o0  Dialogflow lOgGinG o0o0oo00o0O0o0o0O0o0')
@@ -57,7 +57,7 @@ const logLightResponse = (result) => {
 const parseMoodFromBody = (body) => {
     let mood;
     if (body.queryResult) {
-        logDialogFlowPostBody(req.body);
+        logDialogFlowPostBody(body);
         let msgs = body.queryResult.fulfillmentMessages;
         let customPayload = msgs.find( (msg) => msg.hasOwnProperty('payload') );
         mood = customPayload.payload.mood;
@@ -99,10 +99,10 @@ app.get('/getstate', jsonParser, (req, res) => {
 });
 
 app.post('/', jsonParser, (req, res) => {
-    console.log('req.', req.body);
     if (!req.body || !Object.keys(req.body)) {
-        return res.sendStatus(400)
+        return res.sendStatus(400);
     }
+    console.log('POST recived  req.body:', req.body);
     let mood = parseMoodFromBody(req.body);
 
 
@@ -110,7 +110,8 @@ app.post('/', jsonParser, (req, res) => {
     res.status = 200
     var resBody = {
         source: 'IlluminationStation studio app',
-        fulfillmentText: "sdsd"
+        fulfillmentText: '',
+        mood: mood
     };
 
     switch (mood) {
@@ -118,34 +119,32 @@ app.post('/', jsonParser, (req, res) => {
             resBody.fulfillmentText = 'I\'m puttin on the disco lights! Let\'s boogie!'
             lightStates.setState('party')
                 .then(logLightResponse)
-                .done(res.json(resBody))
+                .done(res.json(resBody));
             break
         case 'soothing':
             resBody.fulfillmentText = 'I feel you.  Why don\'t you get cosy on the couch and I\'ll set the ambiance for you.  Do you need a massage?'
             lightStates.setState('soothing')
                 .then(logLightResponse)
-                .done(res.json(resBody))
-            break
+                .done(res.json(resBody));
+            break;
+        case 'artic':
+            resBody.fulfillmentText = 'I feel you.  Why don\'t you get cosy on the couch and I\'ll set the ambiance for you.  Do you need a massage?'
+            lightStates.setState('artic')
+                .then(logLightResponse)
+                .done(res.json(resBody));
+            break;
         default:
-            console.log('Oops! should not get here:', mood)
-            resBody.fulfillmentText = 'Oops. I\'m in the dark with this one. But maybe this will light you up.'
+            console.log('Oops! should not get here:', mood);
+            resBody.fulfillmentText = 'Oops. I\'m in the dark with this one. But maybe this will light you up.';
+            resBody.mood = 'oops';
             lightStates.setState('oops')
                 .then(logLightResponse)
                 .done(res.json(resBody))
     }
-})
+});
 
+app.put('/', (req, res) => res.send({message:'There is nothing to PUT in the Illumination Station'}));
 
-app.put('/', (req, res) => res.send({message:'There is nothing to PUT in the Illumination Station'}))
+app.listen(9800, () => console.log('Example app listening on port 9800!'));
 
-    // app.get('/healthcheck', (req, res) => res.sendStatus(200))
-    //
-    // app.get('/partylights', (req, res) => {
-    //     res.send({message: 'Party Lights!!'})
-    // })
-
-
-app.listen(9800, () => console.log('Example app listening on port 9800!'))
-
-
-require('./hue')
+require('./hue');

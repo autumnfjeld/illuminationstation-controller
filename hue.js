@@ -5,7 +5,8 @@ function displayBridges(bridge) {
 	console.log("Hue Bridges Found: " + JSON.stringify(bridge));
 }
 function displayResult(description, result) {
-	console.log('\n',description, '\n', JSON.stringify(result, null, 2), '\n');
+	console.log('\n',description, '\n', result, '\n');
+	// console.log('\n',description, '\n', JSON.stringify(result, null, 2), '\n');
 }
 function logSetState(stateLabel, stateValues) {
 	console.log('\no0o0oo00o00o0o0O0o00oO0o0o0O0o00oo00Oo\n' +
@@ -26,7 +27,8 @@ const username = 'cq5Yb7Me6tLAS-hxKUDsm9oRtUKpGG24edGUsO01'
 const api = new hue.HueApi(host, username)
 
 api.config()
-    .then((result) => displayResult('CONFIG', result))
+    .then( (result) => displayResult('CONFIG', result))
+	.catch( (error) => console.log('OOPS! ERROR in hue api.config(). Is the bridge available?\n Error is:', error))
     .done();
 
 api.lights()
@@ -60,7 +62,7 @@ api.setLightState(1, resetState)
 let initState = hue.lightState.create().on();
 
 // const lightState = hue.lightState
-// Clear all light states
+// Clear all light statesf
 // api.setLightState(1, hue.lightState.create().off())
 
 const lightStates = {
@@ -69,9 +71,11 @@ const lightStates = {
 
 	currentMood: 'none',
 
-	party: hue.lightState.create().on().transitionFast().xy(.25,.11).colorLoop().alert('lselect'),
+	party: hue.lightState.create().on().transitionFast().xy(.25,.11).colorLoop().alert('lselect').colorLoop(),
 
 	soothing: hue.lightState.create().on().transitionInstant().effect('none').xy(0.57, 0.34),
+
+	artic: hue.lightState.create().on().transitionInstant().effect('none').xy(0.25, 0.15),
 
 	oops: hue.lightState.create().on().transitionFast().alert('select').xy(0.08, 0.61),
 
@@ -122,7 +126,7 @@ const lightStates = {
 
 	resetState: function(){
 		api.setLightState(1, resetState)
-			.then( () => {displayResult()});
+			.then( (res) => {displayResult('RESET STATE DONE', res)});
 	},
 
 	off: function () {
