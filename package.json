@@ -8,8 +8,8 @@
     "start": "node app.js",
     "curl-root": "curl http://59.100.235.250:9800 -XPUT -d\"from=autumn&message=MakeItWork\"  | json_pp",
     "curl-data": "curl http://59.100.235.250:9800 -XPUT -d @test/dialogflow-req.json",
-    "curl-post-party": "curl -v POST http://59.100.235.250:9800 -d @test/dialogflow-req-party.json --header \"Content-Type: application/json\" | json_pp",
-    "curl-post-soothing": "curl -v POST http://59.100.235.250:9800 -d @test/dialogflow-req-soothing.json --header \"Content-Type: application/json\"",
+    "party": "curl -v POST http://59.100.235.250:9800 -d @test/dialogflow-req-party.json --header \"Content-Type: application/json\" | json_pp",
+    "soothing": "curl -v POST http://59.100.235.250:9800 -d @test/dialogflow-req-soothing.json --header \"Content-Type: application/json\"",
     "curl-post-lightcheck": "curl http://59.100.235.250:9800/lightcheck",
     "greenlock": "greenlock",
     "letsencrypt": "letsencrypt"

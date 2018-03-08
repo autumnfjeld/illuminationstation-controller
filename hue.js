@@ -40,30 +40,36 @@ api.lights()
 const resetState = {
 	"on": true,
 	"bri": 254,
-		"hue": 10,
-		"sat": 254,
-		"effect": "none",
-		"xy": [
-			0.35,
-			0.3
-		],
-		"ct": 319,
-		"alert": "none"
+	"hue": 10,
+	"sat": 254,
+	"effect": "none",
+	"alert": "none"
 };
 
-// initState.reset();
-// api.setLightState(1, initState.reset())
 api.setLightState(1, resetState)
 	.then( (result) => {
-		console.log("WTHD", result);
 		logSetState('initState.reset', initState._values)
 		api.lights().then( (result) => displayResult('INIT AND RESET', result));
 	});
-let initState = hue.lightState.create().on();
+// Set nitial light setting to yellow-ish.
+let initState = hue.lightState.create().on().hue(22600);
+api.setLightState(1, initState);
 
-// const lightState = hue.lightState
-// Clear all light statesf
-// api.setLightState(1, hue.lightState.create().off())
+
+/**********************
+* HOW TO SET color
+* bri: minimum brightness 0 to its maximum brightness 254
+* sat: 25 gives most saturated colors, higher sat means less intensity & more whiteness
+* hue: 0 (red) to 65280 (red)
+* 	red      0
+*	yellow   12750	0*
+*    green	 46920	0.1691	0.0441
+*	pink     56100	0.4149	0.1776
+*	orangy   65280
+*
+* Other stuff
+*	transitionTime 1 = 100ms so 10 = 1second
+**************************************/
 
 const lightStates = {
 
@@ -71,15 +77,87 @@ const lightStates = {
 
 	currentMood: 'none',
 
-	party: hue.lightState.create().on().transitionFast().xy(.25,.11).colorLoop().alert('lselect').colorLoop(),
+	intervalId: null,
 
-	soothing: hue.lightState.create().on().transitionInstant().effect('none').xy(0.57, 0.34),
+	clearInterval: () => {
+		console.log('clearing setTimeout interval.');
+		if (this.intervalId) {
+			clearInterval(this.intervalId)
+			this.intervalId = null;
+		}
+	},
 
-	artic: hue.lightState.create().on().transitionInstant().effect('none').xy(0.25, 0.15),
+	lightStateCycle: function({colors, transitionTime}) {
+		console.log('{colors, transitionTime}', colors, transitionTime);
+		api.setLightState(1, hue.lightState.create().on().transitionFast().effect('none').bri(254).sat(254).hue(colors[0]));
 
-	oops: hue.lightState.create().on().transitionFast().alert('select').xy(0.08, 0.61),
+		let i = 0;
+		this.intervalId = setInterval( () => {
+			i = i === colors.length ? 0 : i+1;
+			console.log('i', i, colors.length, colors[i]);
+			api.setLightState(1, hue.lightState.create().transitionTime(transitionTime*10).hue(colors[i]));
+			// api.setLightState(1, hue.lightState.create().shortAlert().transitionTime(transitionTime*10).hue(colors[i]));
+		}, transitionTime*1000);
+	},
 
-	purple: hue.lightState.create().on().transitionFast().xy(0.24, 0.08),
+	party: () => {
+		console.log('CRAZXY PARTY');
+		const colors = [0, 5000, 12000, 25500, 47000, 54000, 47000 ];
+		const transitionTime = .05
+		let i = 0;
+		api.setLightState(1, hue.lightState.create().on().transitionFast().effect('none').bri(254).sat(254).hue(colors[0]));
+		this.intervalId = setInterval( () => {
+			i = i === colors.length ? 0 : i+1;
+			// console.log('i', i, colors.length, colors[i]);
+			api.setLightState(1, hue.lightState.create().transitionFast().hue(colors[i]));
+		}, transitionTime*1000);
+		return 'Party lights set.';
+	},
+
+	soothing: () => {
+		console.log('SOOTHING');
+		const colors = [48000, 6120];
+		const transitionTime = 4
+		let i = 0;
+		api.setLightState(1, hue.lightState.create().on().transitionSlow().effect('none').bri(200).sat(254).hue(colors[0]));
+		this.intervalId = setInterval( () => {
+			i = i === 0 ? 1 : 0;
+			api.setLightState(1, hue.lightState.create().transitionTime(transitionTime*10).hue(colors[i]));
+		}, transitionTime*1000);
+		return 'Soothing lights set.';
+	},
+
+	artic: function () {
+		console.log('ARTIC');
+		const cycleSettings = {
+			colors: [30000, 45000],
+			transitionTime: 4
+		};
+		const colors = [30000, 45000];
+		api.setLightState(1, hue.lightState.create().on().transitionSlow().effect('none').bri(200).sat(254).hue(colors[0]))
+			.then(console.log('artic res', res));
+		this.lightStateCycle(cycleSettings);
+		let x = 0;
+		let color;
+		setInterval( () => {
+			x++;
+			color = 35000 + 7000* Math.sin(x);
+			console.log('color', x, color);
+			api.setLightState(1, hue.lightState.create().hue(color));
+		});
+	},
+
+	neutral: () => {
+		api.setLightState(1, hue.lightState.create().on().transitionInstant().effect('none').hsl(30,38,60));
+	},
+
+	oops: () => {
+		api.setLightState(1, hue.lightState.create().on().shortAlert().transitionFast().bri(200).sat(254).hue(25920));
+	},
+
+	purple: () => {
+		api.setLightState(1, hue.lightState.create().on().transitionFast().xy(0.24, 0.08));
+	},
 
 	getState: function(){
 		let current = {
@@ -88,80 +166,52 @@ const lightStates = {
 		};
 		return new Promise((resolve, reject) => {
 			api.lights()
-			.then( (result) => {
-				current.lightState = result;
-				displayResult('CURRENT STATE', current);
-				resolve(current);
-			})
-			.catch( (err) => {
-				reject(err)
-			})
-			.done()
-
-		})
+				.then( (result) => {
+					current.lightState = result;
+					displayResult('CURRENT STATE', current);
+					resolve(current);
+				})
+				.catch( (err) => {
+					reject(err);
+				})
+				.done();
+		});
 	},
 
 	setState: function (mood){
-		this.resetState()
-		this.currentState = this[mood];
-		this.currentMood = mood;
-		logSetState(mood, this[mood]._values);
-		return api.setLightState(1, this[mood]);
-
-		// Clear old state
-		// api.setLightState(1, this.currentState.off())
-		// 	.then( () => {
-		// 		this.currentState = this[state]
-		// 		logSetState(state, this[state]._values);
-		// 		api.lights()
-		// 		    .then( (result) => {
-		// 				displayResult('EXISTING STATE', result);
-		// 			})
-		// 			.then( () => {
-		// 				return api.setLightState(1, this[state]);
-		// 			})
-        //
-		// 	});
+		console.log('lightStates.setState for mood', mood);
+		// Use promise to match with previous code
+		return new Promise((resolve, reject) => {
+			if (!mood) {
+				return reject('Missing mood, cannot change the lighting.');
+			}
+			this.currentMood = mood;
+			this.resetState()
+				.then( (res) => {
+					displayResult('RESET STATE DONE', res);
+					// Call the mood function and save response to send back to caller
+					const moodSet = this[mood]();
+					resolve(moodSet);
+				})
+				.catch( (err) => {
+					reject(err);
+				})
+				.done();
+		});
 	},
 
 	resetState: function(){
-		api.setLightState(1, resetState)
-			.then( (res) => {displayResult('RESET STATE DONE', res)});
+		console.log('resetState()');
+		this.clearInterval();
+		return api.setLightState(1, resetState);
 	},
 
 	off: function () {
 		return api.setLightState(1, this.currentState.off())
-				  .then(logSetState('off', this.state));
-
-	},
-
-	// party: function () {
-	// 	// Create a new lightStat objerct to pass to a Philips Hue Light
-	// 	this.state.reset()
-	// 	// this.state = hue.lightState.create().on().transitionFast().colorLoop()
-	// 	logSetState('party', this.state)
-	// 	return api.setLightState(1, this.state.transitionFast().colorLoop())
-	// },
-    //
-	// soothing: function () {
-	// 	console.log('this', this);
-	// 	// this.state = null
-	// 	// this.state = hue.lightState.create().on().transitionInstant().xy(0.57, 0.34)
-	// 	this.state.reset()
-	// 	logSetState('soothing', this.state)
-	// 	return api.setLightState(1, this.state.reset().transitionInstant().xy(0.57, 0.34))
-	// },
-    //
-	// oops: function () {
-	// 	// this.state = null
-	// 	// this.state = hue.lightState.create().on().transitionFast().alert('lselect').xy(0.08, 0.61)
-	// 	console.log('this.state', this.state);
-	// 	this.state.transitionFast().alert('lselect').xy(0.08, 0.61)
-	// 	logSetState('oops', this.state)
-	// 	return api.setLightState(1, this.state)
-	// }
+				  .then((res) => console.log('Turning off'));
+	}
 }
-// console.log('lightStates', lightStates);
-
+// Set initial state to artic
+lightStates.setState('artic');
 
 module.exports = lightStates
