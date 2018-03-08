@@ -81,14 +81,13 @@ const parseMoodFromBody = (body) => {
 
 const sendSuccessRes = (res, resBody) => {
     console.log('\nEND____sendSuccessRes() App Light state changed:', resBody);
-    // console.log('\n________________________ Controller work is almost done! ________________________', resBody);
     res.json(resBody);
 };
 
 const sendErrorResponse = (res, err) => {
     res.status = 500;
+    console.log('\nEND____ERROR___sendErrorRes() App Light state changed:', err);
     res.json({error: err});
-    console.log('\n________________________ Controller work is done! ________________________', err);
 };
 
 app.use(logStuff);
@@ -136,7 +135,7 @@ app.post('/', jsonParser, (req, res) => {
 
     switch (mood) {
         case 'party':
-            resBody.fulfillmentText = 'I put on the disco lights!  Let\'s boogie!';
+            resBody.fulfillmentText = 'Yippee!  I put on the disco lights!  Let\'s boogie!';
             lightStates.setState('party')
                 .then(() => sendSuccessRes(res,resBody))
                 .catch((err) => sendErrorResponse(res, err));
