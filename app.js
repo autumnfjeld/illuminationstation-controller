@@ -9,8 +9,8 @@ const allowedOrigins = [
     'http://localhost:3000',
     'http://localhost:5000',
     'http://illuminationstation.nmutua.com',
-    'http://upwr9p7bk3.execute-api.ap-southeast-2.amazonaws.com'];
-
+    'http://upwr9p7bk3.execute-api.ap-southeast-2.amazonaws.com'
+];
 
 const jsonParser = bodyParser.json({
     extended: true
@@ -153,8 +153,20 @@ app.post('/', jsonParser, (req, res) => {
                 .catch((err) => sendErrorResponse(res, err));
             break;
         case 'neutral':
-            resBody.fulfillmentText = 'I feel you. | It\'s all just goin\' as it goes.| Stay illuminated.';
+            resBody.fulfillmentText = 'I feel you. It\'s all just goin\' as it goes. Stay illuminated.';
             lightStates.setState('neutral')
+                .then(() => sendSuccessRes(res,resBody))
+                .catch((err) => sendErrorResponse(res, err));
+            break;
+        case 'oops':
+            resBody.fulfillmentText = 'Ooops!!!  Did you know this is the color of oops?';
+            lightStates.setState('oops')
+                .then(() => sendSuccessRes(res,resBody))
+                .catch((err) => sendErrorResponse(res, err));
+            break;
+        case 'purple':
+            resBody.fulfillmentText = 'Purple people eater!';
+            lightStates.setState('purple')
                 .then(() => sendSuccessRes(res,resBody))
                 .catch((err) => sendErrorResponse(res, err));
             break;

@@ -105,11 +105,15 @@ const lightStates = {
 		const colors = [0, 5000, 12000, 25500, 47000, 54000, 47000 ];
 		const transitionTime = .05
 		let i = 0;
-		api.setLightState(1, hue.lightState.create().on().transitionFast().effect('none').bri(254).sat(254).hue(colors[0]));
+		api.setLightState(1, hue.lightState.create().on().transitionTime(transitionTime).effect('none').bri(254).sat(254).hue(colors[0]));
+		api.setLightState(2, hue.lightState.create().on().transitionTime(transitionTime).effect('none').bri(254).sat(254).hue(colors[1]));
+		api.setLightState(3, hue.lightState.create().on().transitionTime(transitionTime).effect('none').bri(254).sat(254).hue(colors[2]));
 		this.intervalId = setInterval( () => {
 			i = i === colors.length ? 0 : i+1;
 			// console.log('i', i, colors.length, colors[i]);
 			api.setLightState(1, hue.lightState.create().transitionFast().hue(colors[i]));
+			api.setLightState(2, hue.lightState.create().transitionFast().hue(colors[i]));
+			api.setLightState(3, hue.lightState.create().transitionFast().hue(colors[i+1]));
 		}, transitionTime*1000);
 		return 'Party lights set.';
 	},
@@ -117,12 +121,16 @@ const lightStates = {
 	soothing: () => {
 		console.log('SOOTHING');
 		const colors = [48000, 6120];
-		const transitionTime = 4
+		const transitionTime = 4;
 		let i = 0;
 		api.setLightState(1, hue.lightState.create().on().transitionSlow().effect('none').bri(200).sat(254).hue(colors[0]));
+		api.setLightState(2, hue.lightState.create().on().transitionSlow().effect('none').bri(200).sat(254).hue(colors[1]));
+		api.setLightState(3, hue.lightState.create().on().transitionSlow().effect('none').bri(254).sat(254).hue(colors[0]));
 		this.intervalId = setInterval( () => {
 			i = i === 0 ? 1 : 0;
 			api.setLightState(1, hue.lightState.create().transitionTime(transitionTime*10).hue(colors[i]));
+			api.setLightState(2, hue.lightState.create().transitionTime(transitionTime*10).hue(colors[i+1]));
+			api.setLightState(3, hue.lightState.create().transitionTime(transitionTime*100).hue(colors[i]));
 		}, transitionTime*1000);
 		return 'Soothing lights set.';
 	},
@@ -130,33 +138,48 @@ const lightStates = {
 	artic: function () {
 		console.log('ARTIC');
 		const cycleSettings = {
-			colors: [30000, 45000],
+			colors: [43000, 45000],
 			transitionTime: 4
 		};
-		const colors = [30000, 45000];
+		const colors = [43000, 45000];
+		let i = 0;
+		const transitionTime = 6;
 		api.setLightState(1, hue.lightState.create().on().transitionSlow().effect('none').bri(200).sat(254).hue(colors[0]))
-			.then(console.log('artic res', res));
-		this.lightStateCycle(cycleSettings);
-		let x = 0;
-		let color;
-		setInterval( () => {
-			x++;
-			color = 35000 + 7000* Math.sin(x);
-			console.log('color', x, color);
-			api.setLightState(1, hue.lightState.create().hue(color));
-		});
+		api.setLightState(2, hue.lightState.create().on().transitionSlow().effect('none').bri(200).sat(254).hue(colors[1]))
+		api.setLightState(3, hue.lightState.create().on().transitionSlow().effect('none').bri(200).sat(254).hue(colors[1]))
+		this.intervalId = setInterval( () => {
+			i = i === 0 ? 1 : 0;
+			api.setLightState(1, hue.lightState.create().transitionTime(transitionTime*10).hue(colors[i]));
+			api.setLightState(2, hue.lightState.create().transitionTime(transitionTime*10).hue(colors[i+1]));
+			api.setLightState(3, hue.lightState.create().transitionTime(transitionTime*10).hue(colors[i]));
+		}, transitionTime*1000);
+			// .then(console.log('artic res'));
+		// this.lightStateCycle(cycleSettings);
+		// let x = 0;
+		// let color;
+		// setInterval( () => {
+		// 	x++;
+		// 	color = 35000 + 7000* Math.sin(x);
+		// 	console.log('color', x, color);
+		// 	api.setLightState(1, hue.lightState.create().hue(colors));
+		// 	api.setLightState(2, hue.lightState.create().hue(color));
+		// });
 	},
 
 	neutral: () => {
 		api.setLightState(1, hue.lightState.create().on().transitionInstant().effect('none').hsl(30,38,60));
+		api.setLightState(2, hue.lightState.create().on().transitionInstant().effect('none').hsl(30,38,60));
 	},
 
 	oops: () => {
-		api.setLightState(1, hue.lightState.create().on().shortAlert().transitionFast().bri(200).sat(254).hue(25920));
+		api.setLightState(1, hue.lightState.create().on().shortAlert().transitionFast().bri(200).sat(254).hue(26920));
+		api.setLightState(2, hue.lightState.create().on().shortAlert().transitionFast().bri(200).sat(254).hue(5155));
+		api.setLightState(3, hue.lightState.create().on().shortAlert().transitionFast().bri(200).sat(254).hue(8906));
 	},
 
 	purple: () => {
 		api.setLightState(1, hue.lightState.create().on().transitionFast().xy(0.24, 0.08));
+		api.setLightState(2, hue.lightState.create().on().transitionFast().bri(200).sat(254).hue(50000));
 	},
 
 	getState: function(){
@@ -204,6 +227,8 @@ const lightStates = {
 		console.log('resetState()');
 		this.clearInterval();
 		return api.setLightState(1, resetState);
+		return api.setLightState(2, resetState);
+		return api.setLightState(3, resetState);
 	},
 
 	off: function () {
