@@ -1,3 +1,6 @@
+/**
+ * See https://github.com/peter-murray/node-hue-api
+ */
 const hue = require("node-hue-api");
 
 /****** Logging *******/
@@ -6,7 +9,6 @@ function displayBridges(bridge) {
 }
 function displayResult(description, result) {
 	console.log('\n',description, '\n', result, '\n');
-	// console.log('\n',description, '\n', JSON.stringify(result, null, 2), '\n');
 }
 function logSetState(stateLabel, stateValues) {
 	console.log('\no0o0oo00o00o0o0O0o00oO0o0o0O0o00oo00Oo\n' +
@@ -16,6 +18,7 @@ function logSetState(stateLabel, stateValues) {
 // function displayLightState(result) {
 //     console.log('\nHue LIGHT STATE:', JSON.stringify(result, null, 2))
 // }
+
 /******* Find and configure hue bridge *****/
 
 // Find hue bridge
@@ -37,6 +40,7 @@ api.lights()
 	})
     .done()
 
+// Reset light state object
 const resetState = {
 	"on": true,
 	"bri": 254,
@@ -46,14 +50,16 @@ const resetState = {
 	"alert": "none"
 };
 
-api.setLightState(1, resetState)
+// Reset light state to clear out previous settins.  Note light "0" means all lights
+api.setLightState(0, resetState)
 	.then( (result) => {
 		logSetState('initState.reset', initState._values)
 		api.lights().then( (result) => displayResult('INIT AND RESET', result));
 	});
-// Set nitial light setting to yellow-ish.
-let initState = hue.lightState.create().on().hue(22600);
-api.setLightState(1, initState);
+
+// Set initial light state.  Note light "0" means all lights
+const initState = hue.lightState.create().on().hue(22600);
+api.setLightState(0, initState);
 
 
 /**********************
@@ -80,7 +86,7 @@ const lightStates = {
 	intervalId: null,
 
 	clearInterval: () => {
-		console.log('clearing setTimeout interval.');
+		console.log('Clearing setTimeout interval.');
 		if (this.intervalId) {
 			clearInterval(this.intervalId)
 			this.intervalId = null;
@@ -110,7 +116,6 @@ const lightStates = {
 		api.setLightState(3, hue.lightState.create().on().transitionTime(transitionTime).effect('none').bri(254).sat(254).hue(colors[2]));
 		this.intervalId = setInterval( () => {
 			i = i === colors.length ? 0 : i+1;
-			// console.log('i', i, colors.length, colors[i]);
 			api.setLightState(1, hue.lightState.create().transitionFast().hue(colors[i]));
 			api.setLightState(2, hue.lightState.create().transitionFast().hue(colors[i]));
 			api.setLightState(3, hue.lightState.create().transitionFast().hue(colors[i+1]));
@@ -121,22 +126,21 @@ const lightStates = {
 	soothing: () => {
 		console.log('SOOTHING');
 		const colors = [48000, 6120];
-		const transitionTime = 4;
+		const transitionTime = 3;
 		let i = 0;
-		api.setLightState(1, hue.lightState.create().on().transitionSlow().effect('none').bri(200).sat(254).hue(colors[0]));
-		api.setLightState(2, hue.lightState.create().on().transitionSlow().effect('none').bri(200).sat(254).hue(colors[1]));
+		api.setLightState(1, hue.lightState.create().on().transitionSlow().effect('none').bri(250).sat(254).hue(colors[0]));
+		api.setLightState(2, hue.lightState.create().on().transitionSlow().effect('none').bri(250).sat(254).hue(colors[1]));
 		api.setLightState(3, hue.lightState.create().on().transitionSlow().effect('none').bri(254).sat(254).hue(colors[0]));
 		this.intervalId = setInterval( () => {
 			i = i === 0 ? 1 : 0;
 			api.setLightState(1, hue.lightState.create().transitionTime(transitionTime*10).hue(colors[i]));
 			api.setLightState(2, hue.lightState.create().transitionTime(transitionTime*10).hue(colors[i+1]));
-			api.setLightState(3, hue.lightState.create().transitionTime(transitionTime*100).hue(colors[i]));
+			api.setLightState(3, hue.lightState.create().transitionTime(transitionTime*10).hue(colors[i]));
 		}, transitionTime*1000);
 		return 'Soothing lights set.';
 	},
 
 	artic: function () {
-		console.log('ARTIC');
 		const cycleSettings = {
 			colors: [43000, 45000],
 			transitionTime: 4
@@ -153,7 +157,6 @@ const lightStates = {
 			api.setLightState(2, hue.lightState.create().transitionTime(transitionTime*10).hue(colors[i+1]));
 			api.setLightState(3, hue.lightState.create().transitionTime(transitionTime*10).hue(colors[i]));
 		}, transitionTime*1000);
-			// .then(console.log('artic res'));
 		// this.lightStateCycle(cycleSettings);
 		// let x = 0;
 		// let color;
@@ -169,6 +172,7 @@ const lightStates = {
 	neutral: () => {
 		api.setLightState(1, hue.lightState.create().on().transitionInstant().effect('none').hsl(30,38,60));
 		api.setLightState(2, hue.lightState.create().on().transitionInstant().effect('none').hsl(30,38,60));
+		api.setLightState(3, hue.lightState.create().on().transitionInstant().effect('none').hsl(30,38,60));
 	},
 
 	oops: () => {
@@ -180,6 +184,7 @@ const lightStates = {
 	purple: () => {
 		api.setLightState(1, hue.lightState.create().on().transitionFast().xy(0.24, 0.08));
 		api.setLightState(2, hue.lightState.create().on().transitionFast().bri(200).sat(254).hue(50000));
+		api.setLightState(3, hue.lightState.create().on().transitionFast().bri(200).sat(254).hue(50000));
 	},
 
 	getState: function(){
@@ -202,7 +207,7 @@ const lightStates = {
 	},
 
 	setState: function (mood){
-		console.log('lightStates.setState for mood', mood);
+		console.log('lightStates.setState() to mood:', mood);
 		// Use promise to match with previous code
 		return new Promise((resolve, reject) => {
 			if (!mood) {

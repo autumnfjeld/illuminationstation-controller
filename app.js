@@ -58,8 +58,8 @@ const logLightResponse = (result) => {
 
 /**
  * Parse mood property from the request
- * @param  {Object} resBody [description]
- * @return {string} mood     [description]
+ * @param  {Object} body    response body
+ * @return {string} mood    mood that was requested
  */
 const parseMoodFromBody = (body) => {
     let mood;
